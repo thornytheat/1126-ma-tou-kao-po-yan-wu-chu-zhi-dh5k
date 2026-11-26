@@ -8,7 +8,7 @@ from .berth_assignment.switching import try_exceptions
 from .turnaround_review.handover_log import audit_actual
 from .vessel_notices.service import register_notices, line_workload
 from .tide_slices.service import plan_from_hydro, summarize_windows
-from .dwell_estimator.service import learn, estimate_all, duration_evidence
+from .dwell_estimator.service import learn, estimate_all, crane_upper_bounds, duration_evidence
 from .queue_pressure.service import train_pressure, flag_queue
 from .berth_assignment.service import requests, book, committed_blocks
 from .turnaround_review.service import finalize, check_records, outcome_groups
@@ -34,15 +34,17 @@ def run(capacity: int | None=None) -> dict:
     prior_error=readable(compare_k(past,[(620,755),(755,890)]))
     model=learn(past,moment)
     estimated=estimate_all(model,fleet,windows,controls["yard"])
+    candidate_bounds=crane_upper_bounds(model,fleet,windows,controls["yard"])
     queue_labels=load("anchorage_outcomes.json")
     pressure_replay=train_pressure(queue_labels,controls["training_cutoff"]-110,controls["training_cutoff"])
     queue_accuracy=replay_outcomes(pressure_replay,queue_labels,controls["training_cutoff"],moment)
     pressure=train_pressure(queue_labels,controls["training_cutoff"],moment)
     risks=flag_queue(pressure,fleet,estimated,windows,moment,controls["yard"])
-    applications=requests(fleet,estimated,risks,windows)
-    assignments=book(applications,cap)
-    audit,bills=finalize(assignments,windows,fleet,controls)
-    downtime=try_exceptions(applications,assignments,load("quay_incidents.json"),controls["reefer_fee"])
+    applications=requests(fleet,estimated,risks,windows,candidate_bounds)
+    assignments=book(applications,cap,bounds=candidate_bounds)
+    audit,bills=finalize(assignments,windows,fleet,controls,candidate_bounds)
+    downtime=try_exceptions(applications,assignments,load("quay_incidents.json"),
+                            controls["reefer_fee"],candidate_bounds)
     transfer=audit_actual(assignments,load("signed_outturn_logs.json"),controls["horizon"]+120)
     linked={ship.call:ship for ship in fleet}
     groups=outcome_groups(assignments)
@@ -50,8 +52,11 @@ def run(capacity: int | None=None) -> dict:
     for booking in assignments:
         ship=linked[booking.call]
         line=asdict(booking)
+        selected_bound=candidate_bounds.get(booking.call,{}).get(booking.cranes) if booking.berth else None
+        selected_high=selected_bound.get("high") if isinstance(selected_bound,dict) else None
         line.update(route=ship.line, boxes=ship.boxes, reefers=ship.perishable,
-                    high=estimated[booking.call].high,risk=risks[booking.call]["risk"],
+                    high=selected_high if selected_high is not None else estimated[booking.call].high,
+                    risk=risks[booking.call]["risk"],
                     reason=booking.reason+" · "+risks[booking.call]["reason"])
         rows.append(line)
     series=[{"label":"接收申报","value":len(inbox.events)},
@@ -78,7 +83,7 @@ def run(capacity: int | None=None) -> dict:
              "records":list(risks.values())+queue_accuracy},
             {"title":"靠泊调配","summary":f"本截面配额 {cap}，泊位已登记 {len(committed_blocks(assignments))} 个",
              "records":[asdict(row) for row in assignments]+downtime},
-            {"title":"滞港复核","summary":"安全窗与泊位占用检查通过" if audit.cleared else "发现靠泊安全冲突",
+            {"title":"滞港复核","summary":"交班复核通过，排靠单可交班" if audit.cleared else "交班复核未通过，预测上界或安全检查冲突，整单退回",
              "records":check_records(audit,bills)+transfer},
         ],
     }

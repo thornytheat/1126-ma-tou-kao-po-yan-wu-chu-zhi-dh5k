@@ -43,14 +43,14 @@ def switch_delta(prior,new,cold_boxes,fee_cents):
         change.append(HandoverChange(identity,old_status,new_status,old_berth,new_berth,pause,reefer,cost))
     return tuple(change)
 
-def try_exceptions(requests, baseline, alternatives, fee_cents):
+def try_exceptions(requests, baseline, alternatives, fee_cents, bounds=None):
     box_counts={row.call:row.cold_boxes for row in requests}
     comparisons=[]
     for scenario in alternatives:
         if not scenario["name"] or not isinstance(scenario["reserved"],dict):
             raise ValueError("泊位反事实需要名称与预留表")
         blocked={key: careful_blocks(rows) for key,rows in scenario["reserved"].items()}
-        revised=book(requests,scenario["limit"],blocked)
+        revised=book(requests,scenario["limit"],blocked,bounds=bounds)
         delta=switch_delta(baseline,revised,box_counts,fee_cents)
         comparisons.append({"scenario":scenario["name"],"available":sum(r.berth is not None for r in revised),
                             "rerouted":sum(d.old_berth!=d.new_berth for d in delta),

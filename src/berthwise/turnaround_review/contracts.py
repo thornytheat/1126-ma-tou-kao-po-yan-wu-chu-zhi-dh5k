@@ -103,3 +103,11 @@ class PortAudit:
     @property
     def cleared(self):
         return not self.conflicts
+
+    @property
+    def accepted(self):
+        return self.cleared
+
+    @property
+    def handover_ready(self):
+        return self.cleared
