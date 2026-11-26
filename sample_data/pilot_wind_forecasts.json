@@ -1,0 +1,11 @@
+{
+  "policy": {
+    "D-16":{"standard_heading":88,"cross_limit":26,"min_visibility":900,"installation":"南转区"},
+    "D-21":{"standard_heading":115,"cross_limit":28,"min_visibility":800,"installation":"东进港"}
+  },
+  "reports":[
+    {"key":"W-9","harbor":"南转区","begin":1375,"end":1445,"issued":920,"gust_kn":30,"visibility_m":1400,"wind_from":175,"level":1,"revoked":false},
+    {"key":"W-9","harbor":"南转区","begin":1375,"end":1445,"issued":980,"gust_kn":20,"visibility_m":1400,"wind_from":175,"level":2,"revoked":true},
+    {"key":"F-25","harbor":"东进港","begin":1320,"end":1360,"issued":889,"gust_kn":15,"visibility_m":550,"wind_from":50,"level":1,"revoked":false}
+  ]
+}

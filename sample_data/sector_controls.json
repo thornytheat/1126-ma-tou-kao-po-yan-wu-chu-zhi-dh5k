@@ -1,0 +1,56 @@
+{
+  "at": 930,
+  "horizon": 1500,
+  "training_cutoff": 710,
+  "yard": 0.65,
+  "reefer_fee": 560,
+  "berths": [
+    {
+      "key": "D-16",
+      "length": 280,
+      "chart_depth": 11.4,
+      "underkeel": 0.7,
+      "cranes": 3,
+      "closed": [
+        [
+          1080,
+          1140
+        ]
+      ]
+    },
+    {
+      "key": "D-17",
+      "length": 326,
+      "chart_depth": 12.8,
+      "underkeel": 0.7,
+      "cranes": 3,
+      "closed": [
+        [
+          1380,
+          1395
+        ]
+      ]
+    },
+    {
+      "key": "D-21",
+      "length": 250,
+      "chart_depth": 10.1,
+      "underkeel": 0.65,
+      "cranes": 2,
+      "closed": []
+    },
+    {
+      "key": "D-22",
+      "length": 292,
+      "chart_depth": 10.9,
+      "underkeel": 0.72,
+      "cranes": 2,
+      "closed": [
+        [
+          1290,
+          1310
+        ]
+      ]
+    }
+  ]
+}

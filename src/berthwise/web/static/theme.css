@@ -1,0 +1,11 @@
+:root {
+    color-scheme: light;
+    --bg: #f9eee8; --background: var(--bg);
+    --surface: #fff9f5; --ink: #442a24; --muted: #825c50;
+    --accent: #a03b2a; --border: #e3c4b7; --wash: #f9dfd2;
+    --rail: #4e2e28; --on-rail: #fce9df; --on-accent: #fffdf8;
+    --error: #a72338;
+    --display: "Georgia","Songti SC",serif; --type: "PingFang SC",sans-serif;
+    --radius: 8px; --gutter: 28px; --title: 37px;
+    --base: 14px;
+}

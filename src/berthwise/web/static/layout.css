@@ -1,0 +1,17 @@
+.shell {display:grid;grid-template-columns:206px minmax(0,1fr);min-height:100vh;}
+.board {display:grid;grid-template-columns:minmax(0, 1.45fr) minmax(0, 1fr);grid-template-areas:"signal signal" "evidence decisions";gap:13px;}
+.signal {grid-area:signal;} .decisions {grid-area:decisions;} .evidence {grid-area:evidence;}
+.masthead {background:linear-gradient(113deg,var(--surface) 57%,var(--wash) 57%);border:0;} .kpis {border-block:1px solid var(--border);gap:0;} .kpi {border:0;background:transparent;} .panel {border-top:3px solid var(--accent);} .rail {border-right:0;} .signal {padding-bottom:22px;} 
+@media (max-width:1030px) {.board {grid-template-columns:minmax(0,1fr);grid-template-areas:"signal" "decisions" "evidence";}}
+@media (max-width:710px) {
+    .shell {grid-template-columns:minmax(0,1fr);}
+    .rail {padding:10px 14px;border-radius:0;}
+    .rail h2 {margin:0 0 4px;}
+    .rail nav {display:flex;flex-direction:row;overflow:auto;}
+    .rail button {white-space:nowrap;}
+    .content {padding:14px;}
+    .masthead {padding:13px;}
+    .masthead h1 {font-size:clamp(24px,7vw,33px);}
+    .kpis {grid-template-columns:repeat(2,minmax(0,1fr));}
+    .berth-funnel {grid-template-columns:repeat(2,minmax(0,1fr));}
+}
